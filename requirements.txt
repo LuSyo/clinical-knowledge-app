@@ -2,6 +2,8 @@ PyPDF2
 python-dotenv
 langchain
 langchain-openai
+langchain_text_splitters
+langchain-chroma
 langgraph
 pydantic
-markitdown
+markitdown[pdf]
