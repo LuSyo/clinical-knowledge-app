@@ -7,3 +7,4 @@ langchain-chroma
 langgraph
 pydantic
 markitdown[pdf]
+grandalf

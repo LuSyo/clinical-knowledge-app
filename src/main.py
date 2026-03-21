@@ -1,8 +1,11 @@
 import os
 from dotenv import load_dotenv
 
+from langchain_core.messages import HumanMessage
 from pipeline.rag import get_clinical_answer
+from pipeline.graph import build_graph
 from evaluation.judge import evaluate_response
+from schema import GraphState
 
 def main():
     load_dotenv()
@@ -11,24 +14,40 @@ def main():
     if not api_key:
       raise ValueError("OPENAI_API_KEY not found.")
     
-    db_path = "./data/chroma_db"
+    app = build_graph()
+    print(app.get_graph().draw_ascii())
     
-    # 1. Run a Test Query
+    # test query
     query = "What are the recommendations for anticoagulation in atrial fibrillation?"
-    print(f"\n--- Processing Query: {query} ---")
     
-    result = get_clinical_answer(query, db_path)
-    
-    answer = result["answer"]
-    # Combine the text of all retrieved chunks for the judge
-    context_text = "\n".join([doc.page_content for doc in result["context"]])
-    
-    print(f"\nAI Response:\n{answer}")
+    # initial state for the graph
+    initial_state = GraphState(
+      messages=[HumanMessage(content=query)]
+    )
 
-    # 2. Phase 1b: Basic LLM-as-a-Judge Evaluation
-    print("\n--- Starting Evaluation ---")
-    evaluation = evaluate_response(query, answer, context_text)
-    print(f"Judge's Verdict:\n{evaluation}")
+    # invoke the graph
+    final_state = app.invoke(initial_state)
+
+    answer = final_state["messages"][-1].content
+    print(f"\nAI Response:\n{answer}")
+    
+    print(f"\nRetrieved Context Chunks: {len(final_state['context'])}")
+
+    # db_path = "./data/chroma_db"
+    # print(f"\n--- Processing Query: {query} ---")
+    
+    # result = get_clinical_answer(query, db_path)
+    
+    # answer = result["answer"]
+    # # Combine the text of all retrieved chunks for the judge
+    # context_text = "\n".join([doc.page_content for doc in result["context"]])
+    
+    # print(f"\nAI Response:\n{answer}")
+
+    # # 2. Phase 1b: Basic LLM-as-a-Judge Evaluation
+    # print("\n--- Starting Evaluation ---")
+    # evaluation = evaluate_response(query, answer, context_text)
+    # print(f"Judge's Verdict:\n{evaluation}")
 
 if __name__ == "__main__":
     main()
