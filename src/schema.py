@@ -10,8 +10,8 @@ class GraphState(BaseModel):
     # Context retrieved from the vector store
     context: List[str] = Field(default_factory=list)
     
-    # Clinical metrics (Phase 5 prep)
-    evaluation_score: Optional[int] = None
+    # evaluation metrics
+    relevance_score: Optional[int] = None
     hallucination_flag: bool = False
     
     # Helper to print the state clearly during debugging

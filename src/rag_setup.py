@@ -3,8 +3,6 @@ from dotenv import load_dotenv
 
 from data_processing.extractor import process_source_files
 from data_processing.vector_store import create_vector_store
-from pipeline.rag import get_clinical_answer
-from evaluation.judge import evaluate_response
 
 def main():
   load_dotenv()

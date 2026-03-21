@@ -2,9 +2,7 @@ import os
 from dotenv import load_dotenv
 
 from langchain_core.messages import HumanMessage
-from pipeline.rag import get_clinical_answer
 from pipeline.graph import build_graph
-from evaluation.judge import evaluate_response
 from schema import GraphState
 
 def main():
@@ -18,7 +16,7 @@ def main():
     print(app.get_graph().draw_ascii())
     
     # test query
-    query = "What are the recommendations for anticoagulation in atrial fibrillation?"
+    query = "What are the surgical steps for a bilateral lung transplant?"
     
     # initial state for the graph
     initial_state = GraphState(
@@ -32,22 +30,6 @@ def main():
     print(f"\nAI Response:\n{answer}")
     
     print(f"\nRetrieved Context Chunks: {len(final_state['context'])}")
-
-    # db_path = "./data/chroma_db"
-    # print(f"\n--- Processing Query: {query} ---")
-    
-    # result = get_clinical_answer(query, db_path)
-    
-    # answer = result["answer"]
-    # # Combine the text of all retrieved chunks for the judge
-    # context_text = "\n".join([doc.page_content for doc in result["context"]])
-    
-    # print(f"\nAI Response:\n{answer}")
-
-    # # 2. Phase 1b: Basic LLM-as-a-Judge Evaluation
-    # print("\n--- Starting Evaluation ---")
-    # evaluation = evaluate_response(query, answer, context_text)
-    # print(f"Judge's Verdict:\n{evaluation}")
 
 if __name__ == "__main__":
     main()
