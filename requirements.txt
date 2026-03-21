@@ -1,1 +1,7 @@
 PyPDF2
+python-dotenv
+langchain
+langchain-openai
+langgraph
+pydantic
+markitdown
