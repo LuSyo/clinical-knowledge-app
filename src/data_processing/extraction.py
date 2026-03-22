@@ -1,0 +1,119 @@
+import os
+
+from markitdown import MarkItDown
+from typing import List, cast
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_openai import ChatOpenAI
+from langchain_core.messages import AIMessage
+from pydantic import BaseModel, Field
+from schema import TripletExtraction, Triplet
+from utils import setup_logger
+
+logger = setup_logger(log_dir="./logs", exp_name="ingestion_pipeline")
+
+def process_source_files(folder_path: str):
+  if not os.path.exists(folder_path):
+    print(f'Folder not found: {folder_path}')
+    return []
+  
+  md = MarkItDown()
+  text_splitter = RecursiveCharacterTextSplitter(
+      chunk_size=1000,
+      chunk_overlap=100,
+      separators=["\n\n", "\n", ".", " "]
+  )
+
+  all_chunks = []
+  for filename in os.listdir(folder_path):
+    if filename.startswith('.'): continue
+    full_path = os.path.join(folder_path, filename)
+
+    try:
+      result = md.convert(full_path)
+      markdown_text = result.text_content
+
+      chunks = text_splitter.create_documents(
+        texts=[markdown_text],
+        metadatas=[{"source": filename}]
+      )
+      all_chunks.extend(chunks)
+
+    except Exception as e:
+      print(f"Error processing {filename}: {e}")
+
+  return all_chunks
+
+def extract_clinical_triplets(text_chunk: str) -> List[Triplet]:
+    """
+    Performs Open Information Extraction (OIE) to discover entities 
+    and relationships dynamically from clinical text.
+    """
+    # LLM with structured output
+    llm = ChatOpenAI(model="gpt-4o", temperature=0)
+    structured_llm = llm.with_structured_output(TripletExtraction)
+
+    # extraction prompt
+    system_prompt = """
+    You are a clinical data engineer extracting actionable knowledge for a decision support system.
+
+    CRITICAL FILTER:
+    1. IGNORE generic meta-information (e.g., 'medicine is used for treatment', 'report events to MHRA').
+    2. EXTRACT ONLY specific clinical instructions, diagnostic criteria, or treatment pathways.
+    3. FOCUS on 'If-Then' relationships (e.g., 'If irregular pulse, then perform 12-lead ECG').
+    
+    Be specific: prefer 'inhibits' or 'first-line-treatment-for' over 'related_to'.
+    Ensure Subject and Object are concise nouns.
+    """
+
+    # invoke and return triplets
+    try:
+      result = cast(TripletExtraction, structured_llm.invoke([
+          {"role": "system", "content": system_prompt},
+          {"role": "user", "content": text_chunk}
+      ]))
+      return result.triplets
+    except Exception as e:
+        print(f"Extraction failed for chunk: {e}")
+        return []
+    
+# def batch_extract(chunks, batch_size=5, logger=None):
+#   all_triplets = []
+#   for i in range(0, len(chunks), batch_size):
+#     batch = chunks[i:i + batch_size]
+#     # Combine text for the LLM
+#     combined_text = "\n---\n".join([c.page_content for c in batch])
+    
+#     if logger: logger.info(f"Batch processing chunks {i} to {i+batch_size}...")
+#     triplets = extract_clinical_triplets(combined_text)
+#     all_triplets.append(triplets)
+
+#   return all_triplets
+
+class TriageResult(BaseModel):
+    """Binary decision on whether a chunk contains actionable clinical knowledge."""
+    is_actionable: bool = Field(
+        description="True if the text contains specific clinical instructions, diagnostic criteria, or treatment pathways. False otherwise (e.g. it is boilerplate, TOC, or generic info)."
+    )
+
+def triage_chunk(text_chunk: str) -> bool:
+    """
+    Checks if a chunk contains actionable clinical relationships.
+    """
+    # cheap model for binary classification
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    structured_llm = llm.with_structured_output(TriageResult)
+    
+    system_prompt = "You are a clinical data triage officer. Your job is to determine if a text chunk is worth the cost of deep extraction."
+    
+    try:
+      result = cast(TriageResult, structured_llm.invoke([
+          {"role": "system", "content": system_prompt},
+          {"role": "user", "content": text_chunk[:900]}
+      ]))
+      
+      # Log the decision
+      logger.info(f"TRIAGE DECISION: {result.is_actionable}")
+      return result.is_actionable
+    except Exception as e:
+      logger.error(f"Triage failed, defaulting to True for safety: {e}")
+      return True 
