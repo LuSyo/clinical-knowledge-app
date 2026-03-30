@@ -1,9 +1,8 @@
 import os
-import hashlib
 from dotenv import load_dotenv
 from collections import Counter
 from utils import setup_logger
-from data_processing.extraction import process_source_files, extract_clinical_triplets, triage_chunk
+from data_processing.extraction import canonicalise_fact, process_source_files, extract_clinical_triplets, triage_chunk
 from data_processing.vector_store import create_vector_store
 
 logger = setup_logger(log_dir="./logs", exp_name="ingestion_pipeline")
@@ -27,7 +26,7 @@ def main():
 
     for i, chunk in enumerate(chunks):
       
-      if i > 10: break # TEST LIMIT
+      if i > 12: break # TEST LIMIT
 
       if not triage_chunk(chunk.page_content):
         logger.info(f"Skipping Chunk {i}: Non-clinical/Boilerplate.")
@@ -39,16 +38,27 @@ def main():
       triplet_list = []
 
       for t in triplets:
-        discovered_predicates[t.predicate] += 1
-        discovered_entities[t.subject] += 1 
-        discovered_entities[t.object] += 1
-        triplet_list.append(f"[{t.subject} -> {t.predicate} -> {t.object}]")
+        aligned_item = t.item
+        if aligned_item.type == 'fact':
+          aligned_item = canonicalise_fact(aligned_item, chunk)
+
+          if aligned_item.type == 'fact':
+            discovered_predicates[aligned_item.predicate] += 1
+            discovered_entities[aligned_item.subject] += 1 
+            discovered_entities[aligned_item.object] += 1
+            triplet_list.append(f"[Fact: {aligned_item.subject} -> {aligned_item.predicate} -> {aligned_item.object}]")
+        
+        if aligned_item.type == 'logic':
+          discovered_predicates["if_then"] += 1
+          discovered_entities[aligned_item.condition] += 1 
+          discovered_entities[aligned_item.object] += 1
+          triplet_list.append(f"[Logic: IF {aligned_item.condition} -> THEN {aligned_item.action} -> {aligned_item.object}]")
 
       if triplet_list:
         triplet_str = "; ".join(triplet_list)
-        chunk.page_content = f"Relationships: {triplet_str}\n\nText: {chunk.page_content}"
+        chunk.page_content = f"Structured knowledge: {triplet_str}\n\nText: {chunk.page_content}"
         chunk.metadata["triplets"] = triplet_str
-        logger.info(triplet_str)
+        logger.info(f"Extracted knowledge: {triplet_str}")
 
       processed_chunks.append(chunk)
     
