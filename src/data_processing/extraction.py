@@ -156,8 +156,6 @@ def canonicalise_fact(fact: ClinicalFact, source_chunk: str) -> Union[ClinicalFa
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": user_prompt}
     ]))
-
-    print(response)
     
     return response.item
   except Exception as e:

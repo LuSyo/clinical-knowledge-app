@@ -1,5 +1,6 @@
 # data
-data/
+data/sources/
+data/chroma_db/
 
 # models
 models/

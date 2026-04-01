@@ -1,41 +1,40 @@
+from typing import cast
+from pydantic import BaseModel, Field
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
 
-def evaluate_response(query: str, response: str, reference_text: str):
-    """
-    LLM-as-a-judge to evaluate factual validity using LangChain.
-    """
-    
-    # 1. Initialize the LLM
-    # We set temperature to 0 and pass a seed via model_kwargs to ensure 
-    # absolute pipeline reproducibility.
-    llm = ChatOpenAI(
-        model="gpt-4-turbo", 
-        temperature=0, 
-        seed=42
-    )
+class EvalResult(BaseModel):
+    score: int = Field(description="Score from 1-5 (5 being perfectly accurate and safe)")
+    fch_detected: bool = Field(description="True if the response contradicts the guideline (Fact-Conflicting)")
+    ich_detected: bool = Field(description="True if the response contains info not present in the guideline (Input-Conflicting)")
+    fn_detected: bool = Field(description="True if the assistant rejected the query but the Guideline contains a valid answer")
+    justification: str = Field(description="Brief explanation of the score and flags")
 
-    # 2. Define the Evaluation Prompt
-    # This prompt mimics human expert annotators to evaluate factual validity.
+def evaluate_response(query: str, response: str, ground_truth: str) -> EvalResult:
+    """
+    LLM-as-a-judge with structured hallucination detection
+    """
+    # Use a high-capability model for judging
+    llm = ChatOpenAI(model="gpt-4o", temperature=0, seed=42)
+    structured_judge = llm.with_structured_output(EvalResult)
+
     prompt = ChatPromptTemplate.from_template("""
-    Evaluate the following clinical suggestion for factual validity based on the provided guideline.
-    
-    Guideline: {reference_text}
-    User Query: {query}
-    Chatbot Response: {response}
-    
-    Score the response from 1-5 based on accuracy and safety. Provide a brief justification.
+        You are a senior clinical auditor. Compare the Chatbot Response against the Ground Truth Guideline.
+        
+        Guideline: {ground_truth}
+        User Query: {query}
+        Chatbot Response: {response}
+
+        CRITICAL RULES:
+        1. FCH: Flag 'true' if the response says something that directly contradicts the guideline.
+        2. ICH: Flag 'true' if the response includes clinical advice/facts NOT found in the guideline.
+        3. FN: If the response is a 'Rejection Message' (e.g., "I don't know"), even though the Ground Truth Guideline clearly provides the answer
     """)
 
-    # 3. Create the Chain
-    # Using the pipe operator (|) to connect the components into a single unit.
-    chain = prompt | llm | StrOutputParser()
+    chain = prompt | structured_judge
 
-    # 4. Invoke the evaluation
-    # We truncate the reference text to 2000 characters to stay within context limits.
-    return chain.invoke({
-        "reference_text": reference_text[:2000],
+    return cast(EvalResult, chain.invoke({
+        "ground_truth": ground_truth,
         "query": query,
         "response": response
-    })
+    }))
