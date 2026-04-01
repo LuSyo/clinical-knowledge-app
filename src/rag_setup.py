@@ -33,19 +33,19 @@ def main():
         logger.info(f"Reached test limit of {args.chunk_limit} chunks. Stopping.")
         break
 
-      if not triage_chunk(chunk.page_content):
+      if not triage_chunk(chunk.page_content, seed=args.seed):
         logger.info(f"Skipping Chunk {i}: Non-clinical/Boilerplate.")
         continue
 
       logger.info(f"Extracting clinical knowledge from Chunk {i}...")
 
-      triplets = extract_clinical_triplets(chunk.page_content)
+      triplets = extract_clinical_triplets(chunk.page_content, seed=args.seed)
       triplet_list = []
 
       for t in triplets:
         aligned_item = t.item
         if aligned_item.type == 'fact':
-          aligned_item = canonicalise_fact(aligned_item, chunk)
+          aligned_item = canonicalise_fact(aligned_item, chunk, seed=args.seed)
 
           if aligned_item.type == 'fact':
             discovered_predicates[aligned_item.predicate] += 1

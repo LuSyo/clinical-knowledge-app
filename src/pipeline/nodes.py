@@ -37,7 +37,7 @@ def generate(state: GraphState):
     print("--- GENERATING RESPONSE ---")
     
     # set up llm
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, seed=42)
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, seed=state.seed)
 
     # clinical prompt template
     template = """
@@ -78,7 +78,7 @@ def grade_documents(state: GraphState):
     question = state.messages[-1].content
     docs = state.context
 
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, seed=42)
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, seed=state.seed)
     structured_llm = llm.with_structured_output(GradeDocuments)
 
     system_prompt = """You are a grader assessing relevance of a retrieved document to a user question. 

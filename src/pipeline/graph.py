@@ -72,7 +72,7 @@ def route_question(state: GraphState):
     query = state.messages[-1].content
 
     # Initialise a structured LLM
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, seed=42)
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, seed=state.seed)
     structured_llm = llm.with_structured_output(RouteQuery)
 
     # Ask the router to categorize the query

@@ -33,11 +33,15 @@ def run_batch_evaluation():
     for entry in eval_set:
         query = entry["query"]
         ground_truth = entry["ground_truth"]
-        
+         
         logger.info(f"Testing: {query[:50]}...")
 
         # Run the app
-        initial_state = GraphState(messages=[HumanMessage(content=query)])
+        initial_state = GraphState(
+            messages=[HumanMessage(content=query)],
+            use_kg=args.use_kg,
+            seed=args.seed
+            )
         final_state = app.invoke(initial_state)
         system_response = final_state["messages"][-1].content
 
@@ -45,7 +49,8 @@ def run_batch_evaluation():
         grade = evaluate_response(
           query=query, 
           ground_truth=ground_truth,
-          response=system_response 
+          response=system_response,
+          seed=args.seed
         )
 
         # Store metrics

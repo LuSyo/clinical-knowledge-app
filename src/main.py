@@ -21,7 +21,9 @@ def main():
   
   # initial state for the graph
   initial_state = GraphState(
-    messages=[HumanMessage(content=args.query)]
+    messages=[HumanMessage(content=args.query)],
+    use_kg=args.use_kg,
+    seed=args.seed
   )
 
   # invoke the graph

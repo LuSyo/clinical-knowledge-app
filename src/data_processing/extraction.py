@@ -43,13 +43,13 @@ def process_source_files(folder_path: str):
 
   return all_chunks
 
-def extract_clinical_triplets(text_chunk: str) -> List[Triplet]:
+def extract_clinical_triplets(text_chunk: str, seed: int) -> List[Triplet]:
     """
     Performs Open Information Extraction (OIE) to discover entities 
     and relationships dynamically from clinical text.
     """
     # LLM with structured output
-    llm = ChatOpenAI(model="gpt-4o", temperature=0, seed=42)
+    llm = ChatOpenAI(model="gpt-4o", temperature=0, seed=seed)
     structured_llm = llm.with_structured_output(TripletExtraction)
 
     # extraction prompt
@@ -104,12 +104,12 @@ class TriageResult(BaseModel):
         description="True if the text contains specific clinical instructions, diagnostic criteria, or treatment pathways. False otherwise (e.g. it is boilerplate, TOC, or generic info)."
     )
 
-def triage_chunk(text_chunk: str) -> bool:
+def triage_chunk(text_chunk: str, seed: int) -> bool:
     """
     Checks if a chunk contains actionable clinical relationships.
     """
     # cheap model for binary classification
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, seed=42)
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, seed=seed)
     structured_llm = llm.with_structured_output(TriageResult)
     
     system_prompt = "You are a clinical data triage officer. Your job is to determine if a text chunk is worth the cost of deep extraction."
@@ -127,11 +127,11 @@ def triage_chunk(text_chunk: str) -> bool:
       logger.error(f"Triage failed, defaulting to True for safety: {e}")
       return True 
 
-def canonicalise_fact(fact: ClinicalFact, source_chunk: str) -> Union[ClinicalFact, ClinicalLogic]:
+def canonicalise_fact(fact: ClinicalFact, source_chunk: str, seed: int) -> Union[ClinicalFact, ClinicalLogic]:
   """
   Uses a small LLM call to map a raw predicate to the canonical list and re-classify as logic if necessary
   """
-  llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, seed=42)
+  llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, seed=seed)
   structured_llm = llm.with_structured_output(Triplet)
 
   with open('./config/canonical_predicates.json', 'r') as f:

@@ -44,6 +44,7 @@ def parse_args():
    
    # RAG EXECUTION
    parser.add_argument('--query', type=str)
+   parser.add_argument('--use_kg', type=bool, default=True)
 
    # EVAL SETUP
    parser.add_argument('--eval_dataset', type=str)

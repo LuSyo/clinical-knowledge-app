@@ -4,8 +4,14 @@ from langchain_core.messages import BaseMessage
 from langgraph.graph.message import add_messages
 
 class GraphState(BaseModel):
+    # Random seed
+    seed: int = Field(default=4)
+
     # conversation history
     messages: Annotated[List[BaseMessage], add_messages] = Field(default_factory=list)
+
+    # Config: use Knowledge Graph retrieval or not
+    use_kg: bool = Field(default=True, description="Toggle for KG-augmented retrieval logic")
     
     # Context retrieved from the vector store
     context: List[str] = Field(default_factory=list)

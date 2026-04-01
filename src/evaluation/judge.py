@@ -10,12 +10,12 @@ class EvalResult(BaseModel):
     fn_detected: bool = Field(description="True if the assistant rejected the query but the Guideline contains a valid answer")
     justification: str = Field(description="Brief explanation of the score and flags")
 
-def evaluate_response(query: str, response: str, ground_truth: str) -> EvalResult:
+def evaluate_response(query: str, response: str, ground_truth: str, seed: int) -> EvalResult:
     """
     LLM-as-a-judge with structured hallucination detection
     """
     # Use a high-capability model for judging
-    llm = ChatOpenAI(model="gpt-4o", temperature=0, seed=42)
+    llm = ChatOpenAI(model="gpt-4o", temperature=0, seed=seed)
     structured_judge = llm.with_structured_output(EvalResult)
 
     prompt = ChatPromptTemplate.from_template("""
