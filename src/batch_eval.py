@@ -2,32 +2,39 @@ import json
 import os
 from dotenv import load_dotenv
 from datetime import datetime
+from utils import setup_logger, parse_args, Config
 from pipeline.graph import build_graph
 from schema import GraphState
 from langchain_core.messages import HumanMessage
 from evaluation.judge import evaluate_response
 
-def run_batch_evaluation(dataset_path: str, output_dir: str = "./results"):
+def run_batch_evaluation():
     load_dotenv()
-    api_key = os.getenv("OPENAI_API_KEY")
+    
+    args = parse_args()
 
-    if not api_key:
+    logger = setup_logger(log_dir=Config.LOG_DIR, exp_name=args.exp_name)
+
+    if not os.getenv("OPENAI_API_KEY"):
       raise ValueError("OPENAI_API_KEY not found.")
     
-    os.makedirs(output_dir, exist_ok=True)
+    
+    os.makedirs(Config.RESULTS_DIR, exist_ok=True)
+
     app = build_graph()
     
+    dataset_path = os.path.join(Config.EVAL_DIR, args.eval_dataset)
     with open(dataset_path, 'r') as f:
         eval_set = json.load(f)
 
     results = []
-    print(f"--- Starting Eval on {len(eval_set)} cases ---")
+    logger.info(f"--- Starting Eval on {len(eval_set)} cases ---")
 
     for entry in eval_set:
         query = entry["query"]
         ground_truth = entry["ground_truth"]
         
-        print(f"Testing: {query[:50]}...")
+        logger.info(f"Testing: {query[:50]}...")
 
         # Run the app
         initial_state = GraphState(messages=[HumanMessage(content=query)])
@@ -55,11 +62,11 @@ def run_batch_evaluation(dataset_path: str, output_dir: str = "./results"):
 
     # 5. Save the report
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    report_path = os.path.join(output_dir, f"eval_report_{timestamp}.json")
+    report_path = os.path.join(Config.RESULTS_DIR, f"{args.exp_name}.json")
     with open(report_path, 'w') as f:
         json.dump(results, f, indent=2)
     
     print(f"--- Eval Complete. Report saved to {report_path} ---")
 
 if __name__ == "__main__":
-    run_batch_evaluation("data/eval/eval_set.json")
+    run_batch_evaluation()

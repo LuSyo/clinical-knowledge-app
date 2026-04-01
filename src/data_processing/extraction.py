@@ -49,7 +49,7 @@ def extract_clinical_triplets(text_chunk: str) -> List[Triplet]:
     and relationships dynamically from clinical text.
     """
     # LLM with structured output
-    llm = ChatOpenAI(model="gpt-4o", temperature=0)
+    llm = ChatOpenAI(model="gpt-4o", temperature=0, seed=42)
     structured_llm = llm.with_structured_output(TripletExtraction)
 
     # extraction prompt
@@ -109,7 +109,7 @@ def triage_chunk(text_chunk: str) -> bool:
     Checks if a chunk contains actionable clinical relationships.
     """
     # cheap model for binary classification
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, seed=42)
     structured_llm = llm.with_structured_output(TriageResult)
     
     system_prompt = "You are a clinical data triage officer. Your job is to determine if a text chunk is worth the cost of deep extraction."
@@ -131,7 +131,7 @@ def canonicalise_fact(fact: ClinicalFact, source_chunk: str) -> Union[ClinicalFa
   """
   Uses a small LLM call to map a raw predicate to the canonical list and re-classify as logic if necessary
   """
-  llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+  llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, seed=42)
   structured_llm = llm.with_structured_output(Triplet)
 
   with open('./config/canonical_predicates.json', 'r') as f:

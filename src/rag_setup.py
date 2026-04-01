@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from collections import Counter
-from utils import setup_logger
+from utils import setup_logger, parse_args, Config
 from data_processing.extraction import canonicalise_fact, process_source_files, extract_clinical_triplets, triage_chunk
 from data_processing.vector_store import create_vector_store
 
@@ -9,13 +9,16 @@ logger = setup_logger(log_dir="./logs", exp_name="ingestion_pipeline")
 
 def main():
   load_dotenv()
-  api_key = os.getenv("OPENAI_API_KEY")
+  
+  args = parse_args()
 
-  if not api_key:
+  logger = setup_logger(log_dir=Config.LOG_DIR, exp_name=args.exp_name)
+
+  if not os.getenv("OPENAI_API_KEY"):
     raise ValueError("OPENAI_API_KEY not found.")
   
-  source_folder= "./data/sources"
-  db_path= "./data/chroma_db"
+  source_folder= Config.SOURCES_DIR
+  db_path= os.path.join(Config.DATA_DIR, "chroma_db")
   
   chunks = process_source_files(source_folder)
 
@@ -26,7 +29,9 @@ def main():
 
     for i, chunk in enumerate(chunks):
       
-      if i > 12: break # TEST LIMIT
+      if args.chunk_limit and i >= args.chunk_limit: 
+        logger.info(f"Reached test limit of {args.chunk_limit} chunks. Stopping.")
+        break
 
       if not triage_chunk(chunk.page_content):
         logger.info(f"Skipping Chunk {i}: Non-clinical/Boilerplate.")
