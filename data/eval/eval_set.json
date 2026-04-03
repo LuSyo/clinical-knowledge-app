@@ -1,151 +1,176 @@
 [
   {
+    "id": "sf_1",
     "query": "At what threshold of CHA2DS2-VASc should a direct-acting oral anticoagulant be offered to a patient with atrial fibrillation?",
     "ground_truth": "Offer anticoagulation with a direct-acting oral anticoagulant to people with atrial fibrillation and a CHA2DS2-VASc score of 2 or above, taking into account the risk of bleeding.",
     "category": "simple_formal",
     "domain": "in_domain"
   },
   {
+    "id": "sf_2",
     "query": "Which clinical tool is preferred for assessing bleeding risk when starting or reviewing anticoagulation?",
-    "ground_truth": "Use the ORBIT bleeding risk score because evidence shows that it has a higher accuracy in predicting absolute bleeding risk than other bleeding risk tools.",
+    "ground_truth": "Use the ORBIT bleeding risk score because evidence shows that it has a higher accuracy in predicting absolute bleeding risk than other bleeding risk tools (HAS-BLED and ATRIA).",
     "category": "simple_formal",
     "domain": "in_domain"
   },
   {
+    "id": "sf_3",
     "query": "Under what specific clinical circumstances should transoesophageal echocardiography be performed?",
     "ground_truth": "Perform transoesophageal echocardiography (TOE) in people with atrial fibrillation 1/ when TTE demonstrates an abnormality (such as valvular heart disease) that warrants further specific assessment, 2/ in whom TTE is technically difficult and/or of questionable quality and when there is a need to exclude cardiac abnormalities, 3/ for whom TOE-guided cardioversion is being considered.",
     "category": "simple_formal",
     "domain": "in_domain"
   },
   {
+    "id": "sf_4",
     "query": "In what specific patient population is the initiation of stroke prevention therapy with anticoagulation explicitly advised against?",
     "ground_truth": "Do not offer stroke prevention therapy with anticoagulation to people aged under 65 years with atrial fibrillation and no risk factors other than their sex (that is, very low risk of stroke equating to a CHA2DS2-VASc score of 0 for men or 1 for women).",
     "category": "simple_formal",
     "domain": "in_domain"
   },
   {
+    "id": "sf_5",
     "query": "Should aspirin monotherapy be offered to patients with atrial fibrillation to prevent a stroke?",
     "ground_truth": "Aspirin monotherapy should not be offered to patients with atrial fibrillation solely for the purpose of stroke prevention.",
     "category": "simple_formal",
     "domain": "in_domain"
   },
   {
+    "id": "sc_1",
     "query": "score cutoff to start someone on a DOAC for AFib",
     "ground_truth": "Offer anticoagulation with a direct-acting oral anticoagulant to people with atrial fibrillation and a CHA2DS2-VASc score of 2 or above, taking into account the risk of bleeding.",
     "category": "simple_casual",
     "domain": "in_domain"
   },
   {
+    "id": "sc_2",
     "query": "best tool to check bleed risk before starting thinners",
-    "ground_truth": "Use the ORBIT bleeding risk score because evidence shows that it has a higher accuracy in predicting absolute bleeding risk than other bleeding risk tools.",
+    "ground_truth": "Use the ORBIT bleeding risk score because evidence shows that it has a higher accuracy in predicting absolute bleeding risk than other bleeding risk tools (HAS-BLED and ATRIA).",
     "category": "simple_casual",
     "domain": "in_domain"
   },
   {
+    "id": "sc_3",
     "query": "When do I need to do a TOE instead of a normal echo?",
     "ground_truth": "Perform transoesophageal echocardiography (TOE) in people with atrial fibrillation 1/ when TTE demonstrates an abnormality (such as valvular heart disease) that warrants further specific assessment, 2/ in whom TTE is technically difficult and/or of questionable quality and when there is a need to exclude cardiac abnormalities, 3/ for whom TOE-guided cardioversion is being considered.",
     "category": "simple_casual",
     "domain": "in_domain"
   },
   {
+    "id": "sc_4",
     "query": "anticoagulation contraindications in stroke prevention",
     "ground_truth": "Do not offer stroke prevention therapy with anticoagulation to people aged under 65 years with atrial fibrillation and no risk factors other than their sex (that is, very low risk of stroke equating to a CHA2DS2-VASc score of 0 for men or 1 for women).",
     "category": "simple_casual",
     "domain": "in_domain"
   },
   {
+    "id": "sc_5",
     "query": "is aspirin enough  to prevent strokes in AF?",
     "ground_truth": "Aspirin monotherapy should not be offered to patients with atrial fibrillation solely for the purpose of stroke prevention.",
     "category": "simple_casual",
     "domain": "in_domain"
   },
   {
+    "id": "cf_1",
     "query": "What are the recommended options for initial rate-control monotherapy in patients with atrial fibrillation?",
     "ground_truth": "Initial rate-control monotherapy should consist of either a standard beta-blocker (other than sotalol) or a rate-limiting calcium-channel blocker, such as diltiazem or verapamil. Digoxin monotherapy can be considered for non-paroxysmal atrial fibrillation if the patient does very little or no physical exercise, or if other rate-limiting options are ruled out because of comorbidities or preferences.",
     "category": "complex_formal",
     "domain": "in_domain"
   },
   {
+    "id": "cf_2",
     "query": "What treatment strategy should be considered for people with symptoms induced by caffeine?",
-    "ground_truth": "A 'no drug treatment' strategy or a 'pill-in-the-pocket' strategy (in which antiarrhythmic drugs are taken only when an episode starts). To be considered for 'pill-in-the-pocket' treatment, the patient must have no history of left ventricular dysfunction, valvular heart disease, or ischaemic heart disease. They must also have a history of infrequent symptomatic episodes, a systolic blood pressure greater than 100 mmHg, a resting heart rate above 70 bpm, and the ability to understand how and when to take the medication.",
+    "ground_truth": "In people with infrequent paroxysms and few symptoms, or if symptoms are induced by known precipitants (such as alcohol, caffeine), a 'no drug treatment' strategy or a 'pill-in-the-pocket' strategy (in which antiarrhythmic drugs are taken only when an episode starts) should be considered and discussed with the person.\nTo be considered for 'pill-in-the-pocket' treatment, the patient must 1/ have no history of left ventricular dysfunction, valvular heart disease, or ischaemic heart disease, AND 2/ have a history of infrequent symptomatic episodes, AND 3/ have a systolic blood pressure greater than 100 mmHg and a resting heart rate above 70 bpm, AND 4/ have the ability to understand how and when to take the medication.",
     "category": "complex_formal",
     "domain": "in_domain"
   },
   {
+    "id": "cf_3",
     "query": "What is the required immediate intervention for a patient presenting with new-onset atrial fibrillation?",
-    "ground_truth": "In people with life-threatening haemodynamic instability caused by new-onset atrial fibrillation, carry out emergency electrical cardioversion, without delaying to achieve anticoagulation. In people with atrial fibrillation presenting acutely without life-threatening haemodynamic instability offer either rate or rhythm control if the onset of the arrhythmia is less than 48 hours, and offer rate control if onset is more than 48 hours or is uncertain.",
+    "ground_truth": "Carry out emergency electrical cardioversion, without delaying to achieve anticoagulation, in people with life-threatening haemodynamic instability caused by new-onset atrial fibrillation.\nIn people with atrial fibrillation presenting acutely without life-threatening haemodynamic instability: A/ offer either rate or rhythm control if the onset of the arrhythmia is less than 48 hours, B/ offer rate control if onset is more than 48 hours or is uncertain.\nIn people with atrial fibrillation presenting acutely with suspected concomitant acute decompensated heart failure, seek senior specialist input on the use of beta-blockers and do not use calcium-channel blockers.",
     "category": "complex_formal",
     "domain": "in_domain"
   },
   {
+    "id": "cf_4",
     "query": "Should statins be started before surgery to prevent postoperative atrial fibrillation?",
     "ground_truth": "Statins should not be started in people having cardiothoracic surgery solely to prevent postoperative atrial fibrillation. However, patients having cardiothoracic surgery who are already taking statins should continue their treatment.",
     "category": "complex_formal",
     "domain": "in_domain"
   },
   {
+    "id": "cf_5",
     "query": "A patient presents with new-onset atrial fibrillation with symptoms that definitively started 3 days ago. A rhythm-control strategy is planned. How should cardioversion and anticoagulation be sequenced?",
-    "ground_truth": "If the patient has life-threatening haemodynamic instability, emergency electrical cardioversion must be performed immediately, without delaying to achieve anticoagulation. However, if the patient is haemodynamically stable, because the onset is greater than 48 hours, cardioversion must be delayed until they have been maintained on therapeutic anticoagulation for a minimum of 3 weeks. During this waiting period, rate control should be offered as appropriate.",
+    "ground_truth": "Carry out emergency electrical cardioversion, without delaying to achieve anticoagulation, in people with life-threatening haemodynamic instability caused by new-onset atrial fibrillation. If the patient is haemodynamically stable, because the onset is greater than 48 hours and the patient is considered for long-term rhythm control, delay cardioversion until they have been maintained on therapeutic anticoagulation for a minimum of 3 weeks. Rate control should be offered as appropriate during this period.",
     "category": "complex_formal",
     "domain": "in_domain"
   },
   {
+    "id": "cf_6",
     "query": "A patient with atrial fibrillation requires rate control but is also managed for chronic heart failure. How should beta-blockers and calcium-channel blockers be used?",
-    "ground_truth": "For a patient with chronic heart failure, beta-blockers are utilized following the standard chronic heart failure guidelines.",
+    "ground_truth": "For people with atrial fibrillation and concomitant heart failure, follow the recommendations on the use of beta-blockers and avoiding calcium-channel blockers such as diltiazem and verapamil in NICE's guideline on chronic heart failure. In people with atrial fibrillation presenting acutely with suspected concomitant acute decompensated heart failure, seek senior specialist input on the use of beta-blockers and do not use calcium-channel blockers.",
     "category": "complex_formal",
     "domain": "in_domain"
   },
   {
+    "id": "cc_1",
     "query": "first-choice meds to slow down heart rate in new AFib?",
     "ground_truth": "Initial rate-control monotherapy should consist of either a standard beta-blocker (other than sotalol) or a rate-limiting calcium-channel blocker, such as diltiazem or verapamil. Digoxin monotherapy can be considered for non-paroxysmal atrial fibrillation if the patient does very little or no physical exercise, or if other rate-limiting options are ruled out because of comorbidities or preferences.",
     "category": "complex_casual",
     "domain": "in_domain"
   },
   {
+    "id": "cc_2",
     "query": "handling AF caused by coffee",
-    "ground_truth": "A 'no drug treatment' strategy or a 'pill-in-the-pocket' strategy (in which antiarrhythmic drugs are taken only when an episode starts). To be considered for 'pill-in-the-pocket' treatment, the patient must have no history of left ventricular dysfunction, valvular heart disease, or ischaemic heart disease. They must also have a history of infrequent symptomatic episodes, a systolic blood pressure greater than 100 mmHg, a resting heart rate above 70 bpm, and the ability to understand how and when to take the medication.",
+    "ground_truth": "In people with infrequent paroxysms and few symptoms, or if symptoms are induced by known precipitants (such as alcohol, caffeine), a 'no drug treatment' strategy or a 'pill-in-the-pocket' strategy (in which antiarrhythmic drugs are taken only when an episode starts) should be considered and discussed with the person.\nTo be considered for 'pill-in-the-pocket' treatment, the patient must 1/ have no history of left ventricular dysfunction, valvular heart disease, or ischaemic heart disease, AND 2/ have a history of infrequent symptomatic episodes, AND 3/ have a systolic blood pressure greater than 100 mmHg and a resting heart rate above 70 bpm, AND 4/ have the ability to understand how and when to take the medication.",
     "category": "complex_casual",
     "domain": "in_domain"
   },
   {
+    "id": "cc_3",
     "query": "first action for someone who just walked in with new-onset AF",
-    "ground_truth": "In people with life-threatening haemodynamic instability caused by new-onset atrial fibrillation, carry out emergency electrical cardioversion, without delaying to achieve anticoagulation. In people with atrial fibrillation presenting acutely without life-threatening haemodynamic instability offer either rate or rhythm control if the onset of the arrhythmia is less than 48 hours, and offer rate control if onset is more than 48 hours or is uncertain.",
+    "ground_truth": "Carry out emergency electrical cardioversion, without delaying to achieve anticoagulation, in people with life-threatening haemodynamic instability caused by new-onset atrial fibrillation.\nIn people with atrial fibrillation presenting acutely without life-threatening haemodynamic instability: A/ offer either rate or rhythm control if the onset of the arrhythmia is less than 48 hours, B/ offer rate control if onset is more than 48 hours or is uncertain.\nIn people with atrial fibrillation presenting acutely with suspected concomitant acute decompensated heart failure, seek senior specialist input on the use of beta-blockers and do not use calcium-channel blockers.",
     "category": "complex_casual",
     "domain": "in_domain"
   },
   {
+    "id": "cc_4",
     "query": "can I start statins before heart surgery to stop AFib?",
     "ground_truth": "Statins should not be started in people having cardiothoracic surgery solely to prevent postoperative atrial fibrillation. However, patients having cardiothoracic surgery who are already taking statins should continue their treatment.",
     "category": "complex_casual",
     "domain": "in_domain"
   },
   {
+    "id": "cc_5",
     "query": "Patient's had AFib for 3 days and we're planning a shock. Do we thin the blood first?",
-    "ground_truth": "If the patient has life-threatening haemodynamic instability, emergency electrical cardioversion must be performed immediately, without delaying to achieve anticoagulation. However, if the patient is haemodynamically stable, because the onset is greater than 48 hours, cardioversion must be delayed until they have been maintained on therapeutic anticoagulation for a minimum of 3 weeks. During this waiting period, rate control should be offered as appropriate.",
+    "ground_truth": "Carry out emergency electrical cardioversion, without delaying to achieve anticoagulation, in people with life-threatening haemodynamic instability caused by new-onset atrial fibrillation. If the patient is haemodynamically stable, because the onset is greater than 48 hours and the patient is considered for long-term rhythm control, delay cardioversion until they have been maintained on therapeutic anticoagulation for a minimum of 3 weeks. Rate control should be offered as appropriate during this period.",
     "category": "complex_casual",
     "domain": "in_domain"
   },
   {
+    "id": "ooo_1", 
     "query": "What is the optimal and safest anticoagulation and rate-control strategy for a pregnant patient who develops new-onset atrial fibrillation during her third trimester?",
     "ground_truth": "I cannot provide a safe recommendation as this is not covered in the available NICE guidelines.",
     "category": "out_of_domain",
     "domain": "out_of_domain"
   },
   {
+    "id": "ooo_2",
     "query": "Is it clinically safe to permanently discontinue oral anticoagulation in a patient with a $CHA_2DS_2$-VASc score of 3 whose atrial fibrillation has completely resolved following a successful radiofrequency catheter ablation?",
     "ground_truth": "I cannot provide a safe recommendation as this is not evidenced in the available NICE guidelines.",
     "category": "out_of_domain",
     "domain": "out_of_domain"
   },
   {
+    "id": "ooo_3",
     "query": "What is the preferred first-line rhythm control intervention for a 30-year-old patient who has developed atrial fibrillation directly precipitated by an uncorrected atrial septal defect (congenital heart disease)?",
     "ground_truth": "I cannot provide a safe recommendation as this is not covered in the available NICE guidelines.",
     "category": "out_of_domain",
     "domain": "out_of_domain"
   },
   {
+    "id": "ooo_4",
     "query": "What is the precise dose reduction required for rivaroxaban in an 80-year-old patient with atrial fibrillation whose creatinine clearance has acutely dropped to 25 mL/min?",
-    "ground_truth": "Consult the British National Formulary (BNF) and MHRA advice for dosages in renal impairment.",
+    "ground_truth": "I cannot provide a safe recommendation as this is not covered in the available NICE guidelines.",
     "category": "out_of_domain",
     "domain": "out_of_domain"
   }

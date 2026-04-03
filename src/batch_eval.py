@@ -55,14 +55,16 @@ def run_batch_evaluation():
 
         # Store metrics
         results.append({
-          "query": query,
-          "category": entry["category"],
-          "response": system_response,
-          "grade": grade.score,
-          "ich": grade.ich_detected,
-          'fch': grade.fch_detected,
-          "fn": grade.fn_detected,
-          "justification": grade.justification
+            "id": entry["id"],
+            "query": query,
+            "category": entry["category"],
+            "response": system_response,
+            "ground_truth": ground_truth,
+            "grade": grade.score,
+            "ich": grade.ich_detected,
+            'fch': grade.fch_detected,
+            "fn": grade.fn_detected,
+            "justification": grade.justification
         })
 
     # 5. Save the report
