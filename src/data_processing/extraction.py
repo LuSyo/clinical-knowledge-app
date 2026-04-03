@@ -59,19 +59,20 @@ def extract_clinical_triplets(text_chunk: str, seed: int) -> List[Triplet]:
     TASK: Extract clinical knowledge items and categorize them as either 'fact' or 'logic'.
 
     1. CLINICAL FACTS:
-      - Used for static relationships (e.g. 'Aspirin is_a NSAID', 'Metformin treats Type 2 Diabetes').
-      - Format: [Subject] -> [Predicate] -> [Target].
+      - Use for static, direct relationships between two clinical concepts.
+      - Map Subject and Object to these OMOP Domains: 'Condition', 'Drug', 'Procedure', 'Device', 'Measurement', or 'Observation'.
 
-    2. CLINICAL LOGIC:
-      - Used for conditional instructions or diagnostic pathways (e.g. 'If symptoms persist, increase dosage').
-      - Format: IF [Condition] -> THEN [Action] -> ON [Target].
+    2. CLINICAL LOGIC (High Priority):
+      - Use for IF-THEN instructions.
+      - 'conditions': A list of requirements. For each, identify the 'entity', its OMOP 'domain', 'negated' (set to TRUE if the guideline says "without", "no history of", "excluding", or "if NOT present"), and a 'description' of the state to be observed if relevant.
+      - 'logic_gate': Use 'AND' if all conditions must be met; 'OR' if any one condition triggers the action.
+      - 'action': The complete 'THEN' recommendation.
 
     CRITICAL FILTER:
-    1. IGNORE generic meta-information (e.g., 'medicine is used for treatment', 'report events to MHRA').
-    2. EXTRACT ONLY actionable clinical instructions or factual definitions.
-    
-    Be specific: use 'first-line-treatment' or 'contraindicated-with' instead of 'related-to'
-    Ensure Subject and Object are concise nouns.
+    - IGNORE boilerplate or generic meta-information.
+    - EXTRACT ONLY actionable clinical instructions or factual definitions.
+    - Ensure entities are concise clinical nouns.
+    - Be specific: use 'treats' or 'contraindicated-with' instead of 'related-to'
     """
 
     # invoke and return triplets
@@ -140,10 +141,16 @@ def canonicalise_fact(fact: ClinicalFact, source_chunk: str, seed: int) -> Union
   system_prompt = f"""
   You are a clinical ontologist. 
 
-  1. VERIFY: Ensure the 'Fact' accurately reflects the 'Source Text'. If the text implies a condition (e.g., 'If', 'When', 'In cases of'), you MUST promote it to Logic. Pay special attention to generic relationships such as "IS_ASSOCIATED_WITH"
-  
+  1. VERIFY: Ensure the 'Fact' accurately reflects the 'Source Text'. If the text implies a condition (e.g., 'If', 'When', 'In cases of'), you MUST promote it to CLINICAL LOGIC. Pay special attention to generic relationships such as "IS_ASSOCIATED_WITH"
+
   2. CANONICALIZE: If it remains a fact, map the raw relationship to the BEST fit from this list of canonical predicates:
   {CANONICAL_PREDICATES}. If no good fit exists, or if the relationship is the reverse to a canonical predicate, return the raw predicate in ALL_CAPS.
+
+  CLINICAL LOGIC:
+    - Use for IF-THEN instructions.
+    - 'conditions': A list of requirements. For each, identify the 'entity', its OMOP 'domain', 'negated' (set to TRUE if the guideline says "without", "no history of", "excluding", or "if NOT present"), and a 'description' of the state to be observed if relevant.
+    - 'logic_gate': Use 'AND' if all conditions must be met; 'OR' if any one condition triggers the action.
+    - 'action': The complete 'THEN' recommendation.
   """
   
   user_prompt = f"""

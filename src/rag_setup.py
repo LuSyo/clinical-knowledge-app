@@ -55,9 +55,10 @@ def main():
         
         if aligned_item.type == 'logic':
           discovered_predicates["if_then"] += 1
-          discovered_entities[aligned_item.condition] += 1 
-          discovered_entities[aligned_item.object] += 1
-          triplet_list.append(f"[Logic: IF {aligned_item.condition} -> THEN {aligned_item.action} -> {aligned_item.object}]")
+          # discovered_entities[aligned_item.condition] += 1 
+          # discovered_entities[aligned_item.object] += 1
+          triggers = [f"{"NOT" if t.negated else ""} {t.entity} {f"= {t.description}" if t.description else ""}" for t in aligned_item.triggers]
+          triplet_list.append(f"[Logic: IF ({f' {aligned_item.logic_gate} '.join(triggers)}) -> THEN {aligned_item.action}]")
 
       if triplet_list:
         triplet_str = "; ".join(triplet_list)
