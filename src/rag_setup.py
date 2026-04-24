@@ -4,6 +4,7 @@ from collections import Counter
 from utils import setup_logger, parse_args, Config
 from data_processing.extraction import canonicalise_fact, process_source_files, extract_clinical_triplets, triage_chunk
 from data_processing.vector_store import create_vector_store
+from data_processing.graph_store import Neo4jGraphStore
 
 logger = setup_logger(log_dir="./logs", exp_name="ingestion_pipeline")
 
@@ -27,6 +28,10 @@ def main():
     discovered_entities = Counter()
     processed_chunks = []
 
+    graph_store = Neo4jGraphStore()
+    print("Clearing graph database for fresh ingestion...")
+    graph_store.clear_database()
+
     for i, chunk in enumerate(chunks):
       
       if args.chunk_limit and i >= args.chunk_limit: 
@@ -44,6 +49,7 @@ def main():
 
       for t in triplets:
         aligned_item = t.item
+
         if aligned_item.type == 'fact':
           aligned_item = canonicalise_fact(aligned_item, chunk, seed=args.seed)
 
@@ -52,6 +58,8 @@ def main():
             discovered_entities[aligned_item.subject] += 1 
             discovered_entities[aligned_item.object] += 1
             triplet_list.append(f"[Fact: {aligned_item.subject} -> {aligned_item.predicate} -> {aligned_item.object}]")
+
+            graph_store.add_fact(aligned_item)
         
         if aligned_item.type == 'logic':
           discovered_predicates["if_then"] += 1
@@ -59,6 +67,8 @@ def main():
           # discovered_entities[aligned_item.object] += 1
           triggers = [f"{"NOT" if t.negated else ""} {t.entity} {f"= {t.description}" if t.description else ""}" for t in aligned_item.triggers]
           triplet_list.append(f"[Logic: IF ({f' {aligned_item.logic_gate} '.join(triggers)}) -> THEN {aligned_item.action}]")
+
+          graph_store.add_logic(aligned_item)
 
       if triplet_list:
         triplet_str = "; ".join(triplet_list)
